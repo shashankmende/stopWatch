@@ -1,40 +1,39 @@
 import {Component} from 'react'
 import './index.css'
 
-let count = 0
 class Stopwatch extends Component {
   state = {isTimerRunning: false, time: 0, seconds: 0}
 
+  componentWillUnmount() {
+    clearInterval(this.timerId)
+  }
+
   onClickStartBtn = () => {
-    let {time} = this.state
-    const {isTimerRunning} = this.state
-    this.timerId = setInterval(() => {
-      count += 1
-      if (count > 59) {
-        count = 0
-        time += 1
-      }
-      this.setState({
-        time,
-        seconds: count,
-        isTimerRunning: !isTimerRunning,
-      })
-    }, 1000)
+    const {isTimerRunning, time, seconds} = this.state
+
+    if (!isTimerRunning) {
+      this.timerId = setInterval(() => {
+        let newTime = time
+        let newSeconds = seconds + 1
+
+        if (newSeconds > 59) {
+          newTime += 1
+          newSeconds = 0
+        }
+
+        this.setState({
+          time: newTime,
+          seconds: newSeconds,
+          isTimerRunning: true,
+        })
+      }, 1000)
+    }
   }
 
   onClickStopBtn = () => {
     const {isTimerRunning} = this.state
     this.setState({
       isTimerRunning: !isTimerRunning,
-    })
-    clearInterval(this.timerId)
-  }
-
-  onClickResetBtn = () => {
-    this.setState({
-      time: 0,
-      seconds: 0,
-      isTimerRunning: false,
     })
     clearInterval(this.timerId)
   }
